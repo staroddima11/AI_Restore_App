@@ -24,17 +24,18 @@ jobs:
         sudo apt install -y python3-pip zip unzip openjdk-17-jdk wget
         pip install buildozer cython
 
-    - name: Install Android SDK manually
+    - name: Install Android SDK
       env:
         ANDROID_HOME: ${{ github.workspace }}/android-sdk
         ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk
       run: |
-        mkdir -p $ANDROID_HOME/cmdline-tools/latest
-        cd $ANDROID_HOME/cmdline-tools/latest
-        wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O tools.zip
-        unzip -q tools.zip
-        yes | ./bin/sdkmanager --sdk_root=$ANDROID_HOME --licenses
-        yes | ./bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+        mkdir -p $ANDROID_HOME/cmdline-tools
+        cd $ANDROID_HOME/cmdline-tools
+        wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
+        unzip -q tools.zip -d $ANDROID_HOME/cmdline-tools
+        mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME --licenses
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-33" "build-tools;33.0.2"
 
     - name: Verify AIDL installation
       run: |

@@ -24,19 +24,23 @@ jobs:
         sudo apt install -y python3-pip zip unzip openjdk-17-jdk wget
         pip install buildozer cython
 
-    - name: Install Android SDK and Build Tools
+    - name: Install Android SDK manually
       env:
         ANDROID_HOME: ${{ github.workspace }}/android-sdk
         ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk
       run: |
-        mkdir -p $ANDROID_HOME/cmdline-tools
-        cd $ANDROID_HOME/cmdline-tools
-        wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip
-        unzip -q tools.zip
         mkdir -p $ANDROID_HOME/cmdline-tools/latest
-        mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/ || true
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME --licenses || true
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+        cd $ANDROID_HOME/cmdline-tools/latest
+        wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O tools.zip
+        unzip -q tools.zip
+        yes | ./bin/sdkmanager --sdk_root=$ANDROID_HOME --licenses
+        yes | ./bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+
+    - name: Verify AIDL installation
+      run: |
+        if [ ! -f "${{ github.workspace }}/android-sdk/build-tools/33.0.2/aidl" ]; then
+          echo "AIDL not found!"; exit 1;
+        fi
 
     - name: Build APK
       env:
